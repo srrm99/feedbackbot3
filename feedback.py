@@ -4,10 +4,10 @@ from flask_cors import CORS  # Import CORS
 import os
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
-
-# Set your OpenAI API key directly (for testing only)
+# Set your OpenAI API key from the environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize Flask app
@@ -23,7 +23,7 @@ def get_feedback_response(message):
         response = openai.ChatCompletion.create(
             model="gpt-4",  # Use the correct model identifier
             messages=[
-                {"role": "system", "content": "You are a helpful assistant collecting feedback for an event at People+AI. Questions to ask but ask one by one - Do you have any specific feedback for either Project Sukoon or Sunva?, - Was the SoulUp (Partner Feature) valuable for you?, - Do you have any suggestions for Partners we should feature in future mental health or health events?, aat last mention - Thank you for coming! Do follow us on Social Media (peopleplusai) and also check out the Use Case Garden that we spoke about (https://pplus.ai/usecasegarden)"},
+                {"role": "system", "content": "You are a helpful assistant collecting feedback for an event at People+AI."},
                 {"role": "user", "content": message}
             ],
             max_tokens=100,  # Optional: Adjust based on expected response length
@@ -57,4 +57,4 @@ def collect_feedback():
     return jsonify({"feedback_response": feedback_response})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)
