@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Event Feedback Form">
+    <title>Event Feedback Form</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            width: 60%;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+        }
+        .bot-message {
+            font-size: 1.1rem;
+            background-color: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 20px 0 10px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            resize: vertical;
+            font-size: 1rem;
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        textarea:focus {
+            border: 1px solid #2575fc;
+            outline: none;
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1), 0 0 10px rgba(37, 117, 252, 0.2);
+        }
+        button {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            background-color: #2575fc;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(37, 117, 252, 0.2);
+        }
+        button:hover {
+            background-color: #1b63d0;
+        }
+        button:active {
+            background-color: #144aa6;
+            box-shadow: 0 3px 6px rgba(37, 117, 252, 0.4);
+        }
+        .response {
+            margin-top: 30px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: #e3f2fd;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
+        }
+        .bot-message, .response {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Event Feedback Form</h1>
+        <div id="bot-message" class="bot-message">
+            How much value do you think you gained from attending today's session? (1-10)
+        </div>
+        <form id="feedbackForm">
+            <label for="message">Your Response:</label>
+            <textarea id="message" name="message" required placeholder="Type your response here..."></textarea>
+            <button type="submit">Submit Feedback</button>
+        </form>
+        <div id="response" class="response" style="display:none;"></div>
+    </div>
+
+    <script>
+        // Function to display the initial message from the bot
+        function displayBotMessage(message) {
+            const botMessageDiv = document.getElementById("bot-message");
+            botMessageDiv.innerHTML = `<strong>Bot:</strong> ${message}`;
+        }
+
+        // Load the initial message when the page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initial message from the bot
+            displayBotMessage("Welcome to the People+AI event! How did you find the event?");
+        });
+
+        document.getElementById("feedbackForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Get the feedback message
+            const message = document.getElementById("message").value;
+
+            // Send a POST request to the Flask backend
+            fetch("/feedback", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the response from Flask
+                const responseDiv = document.getElementById("response");
+                responseDiv.innerHTML = `<strong>Bot:</strong> ${data.feedback_response}`;
+                responseDiv.style.display = "block";
+                document.getElementById("message").value = ''; // Clear textarea after response
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
